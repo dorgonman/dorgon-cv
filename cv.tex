@@ -1,0 +1,397 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Wenneker Resume/CV
+% LaTeX Template
+% Version 1.0 (3/5/2016)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com) with extensive modifications by 
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+
+\documentclass[a4paper,12pt]{memoir} % Font and paper size
+
+\input{structure.tex} % Include the file specifying document layout and packages
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CONTACT INFORMATION 
+%----------------------------------------------------------------------------------------
+
+\userinformation{ % Set the content that goes into the sidebar of each page
+% Comment out this figure block if you don't want a photo
+\begin{figure}
+\hfill % Right align the photo
+\includegraphics[width=0.6\columnwidth]{dorgon_photo_circle.png} % Your photo
+\end{figure}
+
+\begin{flushright}
+\small % Smaller font size
+
+張景照 \\ 
+Ching Chao, Chang \\
+Dorgon Chang \\
+
+
+\Sep % Some whitespace
+
+EMAIL: \\
+%\textbf{dorgonman@}\\hotmail.com
+%\url{dorgonman@hotmail.com} \\ % Your email address
+\href{mailto:dorgonman@hotmail.com}{\textbf{dorgonman@}\\hotmail.com} \\
+
+
+\Sep % Some whitespace
+
+\textbf{BLOG:} \\ \href{http://dorgon.horizon-studio.net/}{dorgon.\\horizon-studio.net}
+
+\Sep % Some whitespace
+\Sep % Some whitespace
+
+
+\textbf{GITHUB:} \\ \href{https://github.com/dorgonman}{github.com/\\dorgonman}
+
+\vfill % Whitespace under this block to push it up under the photo
+\end{flushright}
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\userinformation % Print your information in the left column
+
+\framebreak % End of the first column
+
+%----------------------------------------------------------------------------------------
+%	HEADING
+%----------------------------------------------------------------------------------------
+
+\cvheading{張景照(Dorgon Chang)} % Large heading - your name
+
+\cvsubheading{Game Software Engineer} % Subheading - your occupation/specialization
+
+%----------------------------------------------------------------------------------------
+%	ABOUT ME
+%----------------------------------------------------------------------------------------
+
+\aboutme{About Me}{
+  Professional game programmer with vast experince in game development 
+  and DevOps automation.
+  Currently working on VR Projects for B2B using Unreal Engine 4.
+}
+
+% 善長遊戲程式設計與流程自動化，擁有多個遊戲與VR專案開發經驗。
+% 目前專注於研究UE4相關技術與應用。 game devlop techniques using UE4
+
+
+\Sep % Some whitespace
+%----------------------------------------------------------------------------------------
+%	EXPERIENCE
+%----------------------------------------------------------------------------------------
+
+\CVSection{Experience}
+
+%------------------------------------------------
+
+\CVItem{2016/12-Current, \href{https://www.mai.ai/}{\textit{Medical Augmented Intelligence}}, Software Architect}{
+  As a main programmer, develop following VR Projects and functions using UE4:
+  \begin{itemize}
+    \item Acupuncture Simulation VR Project (B2B, Support Vive and Oculus)
+    \item Body VR for Beginners 
+    (\href{https://play.google.com/store/apps/details?id=com.mai.mhaexpress}
+    {google store, Daydream})
+    \item Medical Anatomy Training VR Project with Networking and Multiplayer (B2B, Support Vive and Oculus)
+    \item Visualizing medical images using Volume Render Algorithm in VR(B2B, Support Vive and Oculus)
+    \item CI/CD using VSTS
+  \end{itemize}
+}
+
+\CVItem{2015/10-2016/11 , \textit{Gumi Taiwan}, Tech Lead}{
+  As a Engineer Team Leader, 
+  mentoring and sharing coding Skills with team members, 
+  and make sure features are shipped in timely manner.
+}
+
+\CVItem{2013/10-2015/10 , \textit{Gumi Taiwan}, Software Engineer}{
+  As a Game Client Programmer, 
+  implement several funtions for 
+  \begin{itemize}
+    \item \href{https://www.youtube.com/watch?v=p3y6nao3rCU}{LINE Three Kingdoms Brave} using cocos2dx:
+    \begin{itemize}
+      \item Architecture Design and Implement
+      \item Dialogue System
+      \item Patch System
+      \item CI/CD using jenkins
+      \item Implement Database ORM with SOCI for client
+      \item Boost Library Integration for Android and iOS
+      \item Other Game Logics Implementation
+    \end{itemize} 
+
+    \item \href{https://www.youtube.com/watch?v=eYth6HNL5Go}{Crystal of Reunion}: 
+    Establish Localization Workflow using Unity I2 Localization Plugin.
+  \end{itemize} 
+}
+
+\CVItem{2012/11-2013/09 , \textit{Nubee Pte Ltd, Taiwan}, Software Engineer}{
+  As a Game Client Programmer, 
+  implement several funtions for 
+  \begin{itemize}
+    \item Fanta Swords
+    \begin{itemize}
+      \item CI/CD using jenkins
+      \item Patch System
+      \item Texture Pack and Compress for Android(ETC1) and iOS(PVR)
+    \end{itemize}
+  \end{itemize}
+}
+
+\CVItem{2012/08-2012/11 , \textit{Nubee Pte Ltd, Singapore}, Software Engineer}{
+  As a Game Client Programmer, 
+  implement several funtions for 
+  \begin{itemize}
+    \item \href{https://www.youtube.com/watch?v=B0Ak4wmmKAA}{Samurai Empire}
+    \begin{itemize}
+      \item Porting in House C++ Game Engine to Android Platform.
+      \item Social Network Binding for Facebook, twitter, renren, weibo and mixi
+      \item Android GCM Notification
+      \item Device Binding and Transfer
+    \end{itemize}
+  \end{itemize}
+}
+
+\CVItem{2012/08-2012/11 , \textit{Mandatory military service}}{
+
+}
+%------------------------------------------------
+\newpage
+
+
+\userinformation % Print your information in the left column
+
+\framebreak % End of the first column
+%----------------------------------------------------------------------------------------
+%	EDUCATION
+%----------------------------------------------------------------------------------------
+
+\CVSection{Education}
+
+%------------------------------------------------
+
+\CVItem{2009/09-2011/06, 
+National Chiao Tung University, 
+Hsinchu, Taiwan，College of Computer Science, 
+Institutes of Multimedia Engineering}
+{
+  Master of Science in Multimedia Engineering \\
+  Master Thesis:\href{https://www.dropbox.com/s/w9d11qd79i5y4pl/master_thesis_dorgon_chang.pdf?dl=0} 
+  {Measuring Difficulty and Complexity of Puzzle Games} \\
+  Code Used in Thesis:\href{https://github.com/dorgonman/Cross_Block}
+  {https://github.com/dorgonman/Cross\_Block}
+
+}
+
+\CVItem{2010/10-2011/04, 
+University of Tokyo, Japan,
+Department of Electrical Engineering and Information Systems
+}{Exchange Student}
+
+\CVItem{2005/09-2009/06, 
+National Yunlin University of Science and Technology, Taiwan,
+Information  Management}{Bachelor of Business Administration}
+%------------------------------------------------
+
+
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+% \newpage
+
+
+% \userinformation % Print your information in the left column
+
+% \framebreak % End of the first column
+
+
+%----------------------------------------------------------------------------------------
+%	SKILLS
+%----------------------------------------------------------------------------------------
+
+\CVSection{Software Development Skills}
+
+
+%------------------------------------------------
+
+\CVItem{Knowledge}
+{\begin{tabular}{p{0.3\textwidth} p{0.3\textwidth}}
+ \bluebullet CI/CD & \bluebullet Networking \\
+ \bluebullet Computer Graphics & \bluebullet Game AI \\
+ \bluebullet iOS/Android Development & \bluebullet Cross Compiling \\
+ \bluebullet Machine Learning
+\end{tabular}}
+
+%------------------------------------------------
+
+
+%------------------------------------------------
+
+\CVItem{Programming}
+{\begin{tabular}{p{0.2\textwidth} p{0.2\textwidth} p{0.2\textwidth}}
+\bluebullet C/C++ &  \bluebullet C Sharp & \bluebullet Java \\
+\bluebullet Shell Script &  \bluebullet Python \\
+\end{tabular}}
+
+%------------------------------------------------
+
+\CVItem{Game Engine Experience}
+{\begin{tabular}{p{0.2\textwidth} p{0.2\textwidth} p{0.2\textwidth}}
+ \bluebullet Unreal Engine 4 & \bluebullet cocos2d-x & \bluebullet Unity \\
+ \bluebullet OGRE & \bluebullet UDK & \bluebullet HGE \\
+\end{tabular}}
+
+%------------------------------------------------
+
+
+
+%------------------------------------------------
+
+\CVItem{Project Management Software Experience}
+{\begin{tabular}{p{0.2\textwidth} p{0.2\textwidth} p{0.2\textwidth}}
+ \bluebullet VSTS & \bluebullet Redmine & \bluebullet Trello \\
+ \bluebullet Mantis & \bluebullet Jira\\
+\end{tabular}}
+
+%------------------------------------------------
+
+
+%------------------------------------------------
+
+\CVItem{Version Control}
+{\begin{tabular}{p{0.2\textwidth} p{0.2\textwidth} p{0.2\textwidth}}
+ \bluebullet GIT/GIT LFS & \bluebullet SVN \\
+\end{tabular}}
+
+%------------------------------------------------
+
+\newpage
+
+
+\userinformation % Print your information in the left column
+
+\framebreak % End of the first column
+
+%----------------------------------------------------------------------------------------
+%	Side Projects: UE4
+%----------------------------------------------------------------------------------------
+
+\CVSection{Side Projects: UE4}
+
+%------------------------------------------------
+
+{
+  \begin{itemize}
+
+    \item HorizonUI Plugin: \\
+        \href{https://www.unrealengine.com/marketplace/horizon-ui-plugin}
+             {https://www.unrealengine.com/marketplace/horizon-ui-plugin} \\
+    \item HorizonTween Plugin: \\
+        \href{https://www.unrealengine.com/marketplace/horizontween-plugin}
+             {https://www.unrealengine.com/marketplace/horizontween-plugin} \\
+    \item HorizonVR Plugin: \\
+          \href{https://www.unrealengine.com/marketplace/horizonvrplugin}
+               {https://www.unrealengine.com/marketplace/horizonvrplugin} \\
+
+    \item HorizonDatabase Plugin(OpenSource): \\
+          \href{https://github.com/dorgonman/HorizonDatabaseDemo}
+              {https://github.com/dorgonman/HorizonDatabaseDemo}  \\
+              
+    \item Contribute Bug fix Code to UE4 version 
+    \href{https://docs.unrealengine.com/latest/INT/Support/Builds/ReleaseNotes/2015/4_9/index.html}{4.9}, 
+    \href{https://docs.unrealengine.com/latest/INT/Support/Builds/ReleaseNotes/2016/4_14/index.html}{4.14}, 
+    \href{https://docs.unrealengine.com/latest/INT/Support/Builds/ReleaseNotes/4_15/}{4.15} and 
+    \href{https://docs.unrealengine.com/latest/INT/Support/Builds/ReleaseNotes/4_19/}{4.19}, you can find my name "dorgon chang" in contributors list. \\
+
+    \item UE4 VR Training Camp Lecturer: \\
+      \href{http://dorgon.horizon-studio.net/zh/archives/1198}
+          {http://dorgon.horizon-studio.net/zh/archives/1198}
+  \end{itemize}
+
+}
+%------------------------------------------------
+
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+
+%----------------------------------------------------------------------------------------
+%	Side Projects: Others
+%----------------------------------------------------------------------------------------
+
+\CVSection{Side Projects: Others}
+
+%------------------------------------------------
+
+{
+  \begin{itemize}
+    \item Tutorial for C++11 Universal Reference: \\
+        \href{http://dorgon.horizon-studio.net/zh/cuniversalreference}
+             {http://dorgon.horizon-studio.net/zh/cuniversalreference} \\
+
+        \item Connect6: variation of connect5  \\
+        \href{https://github.com/dorgonman/connect6}
+        {https://github.com/dorgonman/connect6} \\   
+
+  \end{itemize}
+
+
+
+}
+%------------------------------------------------
+
+
+
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+
+
+%----------------------------------------------------------------------------------------
+%	Honors
+%----------------------------------------------------------------------------------------
+
+\CVSection{Honors}
+\begin{itemize}
+  \item The Phi Tau Phi Scholastic Honor Society (2009)
+\end{itemize}
+
+
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+%----------------------------------------------------------------------------------------
+%	Language
+%----------------------------------------------------------------------------------------
+
+\CVSection{Language Skills}
+\begin{itemize}
+  \item Mandarin Chinese: Native Speaker
+  \item English: Business Level, New Toeic 805(CEF B2), 2016
+  \item Japaness: Business Level, JLPT Level 1 339/400, 2006
+\end{itemize}
+
+
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+\Sep % Extra whitespace after the end of a major section
+
+\end{document}
