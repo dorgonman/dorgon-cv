@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"><head><title>[演講筆記][UnrealEngine] UE5 Deferred Technology Pipeline for Mobile Games</title><meta charset="utf-8"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=Schibsted Grotesk:wght@400;700&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Quartz 4"/><meta property="og:title" content="[演講筆記][UnrealEngine] UE5 Deferred Technology Pipeline for Mobile Games"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="[演講筆記][UnrealEngine] UE5 Deferred Technology Pipeline for Mobile Games"/><meta name="twitter:description" content="花了一些時間把EpicGameChina關於Mobile Deferred Render的演講看完並做了一些筆記，分享給大家，也推薦大家去看影片，我是覺得收獲蠻多的。 影片在此：UE5 Deferred Technology Pipeline for Mobile Games Mobile Deferred Render直到5.1才算比較成熟 Deferred的優勢在於可以減少shader permutation，因為在base pass不用算lighting，因此相關的permutation就可以從model material直接decouple出來，省下大量的shader數量。 mobil..."/><meta property="og:description" content="花了一些時間把EpicGameChina關於Mobile Deferred Render的演講看完並做了一些筆記，分享給大家，也推薦大家去看影片，我是覺得收獲蠻多的。 影片在此：UE5 Deferred Technology Pipeline for Mobile Games Mobile Deferred Render直到5.1才算比較成熟 Deferred的優勢在於可以減少shader permutation，因為在base pass不用算lighting，因此相關的permutation就可以從model material直接decouple出來，省下大量的shader數量。 mobil..."/><meta property="og:image:alt" content="花了一些時間把EpicGameChina關於Mobile Deferred Render的演講看完並做了一些筆記，分享給大家，也推薦大家去看影片，我是覺得收獲蠻多的。 影片在此：UE5 Deferred Technology Pipeline for Mobile Games Mobile Deferred Render直到5.1才算比較成熟 Deferred的優勢在於可以減少shader permutation，因為在base pass不用算lighting，因此相關的permutation就可以從model material直接decouple出來，省下大量的shader數量。 mobil..."/><meta property="twitter:domain" content="quartz.jzhao.xyz"/><meta property="og:url" content="https://quartz.jzhao.xyz/blog/uncategorized/2022/2022-09-03-ue5-deferred-technology-pipeline-for-mobile-games"/><meta property="twitter:url" content="https://quartz.jzhao.xyz/blog/uncategorized/2022/2022-09-03-ue5-deferred-technology-pipeline-for-mobile-games"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="花了一些時間把EpicGameChina關於Mobile Deferred Render的演講看完並做了一些筆記，分享給大家，也推薦大家去看影片，我是覺得收獲蠻多的。 影片在此：UE5 Deferred Technology Pipeline for Mobile Games Mobile Deferred Render直到5.1才算比較成熟 Deferred的優勢在於可以減少shader permutation，因為在base pass不用算lighting，因此相關的permutation就可以從model material直接decouple出來，省下大量的shader數量。 mobil..."/><meta name="generator" content="Quartz"/><link href="../../../index.css" rel="stylesheet" type="text/css" spa-preserve/><style>.expand-button {
+  position: absolute;
+  display: flex;
+  float: right;
+  padding: 0.4rem;
+  margin: 0.3rem;
+  right: 0;
+  color: var(--gray);
+  border-color: var(--dark);
+  background-color: var(--light);
+  border: 1px solid;
+  border-radius: 5px;
+  opacity: 0;
+  transition: 0.2s;
+}
+.expand-button > svg {
+  fill: var(--light);
+  filter: contrast(0.3);
+}
+.expand-button:hover {
+  cursor: pointer;
+  border-color: var(--secondary);
+}
+.expand-button:focus {
+  outline: 0;
+}
+
+pre:hover > .expand-button {
+  opacity: 1;
+  transition: 0.2s;
+}
+
+#mermaid-container {
+  position: fixed;
+  contain: layout;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: none;
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+}
+#mermaid-container.active {
+  display: inline-block;
+}
+#mermaid-container > #mermaid-space {
+  border: 1px solid var(--lightgray);
+  background-color: var(--light);
+  border-radius: 5px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 80vh;
+  width: 80vw;
+  overflow: hidden;
+}
+#mermaid-container > #mermaid-space > .mermaid-content {
+  padding: 2rem;
+  position: relative;
+  transform-origin: 0 0;
+  transition: transform 0.1s ease;
+  overflow: visible;
+  min-height: 200px;
+  min-width: 200px;
+}
+#mermaid-container > #mermaid-space > .mermaid-content pre {
+  margin: 0;
+  border: none;
+}
+#mermaid-container > #mermaid-space > .mermaid-content svg {
+  max-width: none;
+  height: auto;
+}
+#mermaid-container > #mermaid-space > .mermaid-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  color: var(--dark);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: var(--bodyFont);
+  transition: all 0.2s ease;
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button:hover {
+  background: var(--lightgray);
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button:active {
+  transform: translateY(1px);
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button:nth-child(2) {
+  width: auto;
+  padding: 0 12px;
+  font-size: 14px;
+}
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiRTpcXG9ic2lkaWFuXFxkb3Jnb24tbm90ZVxcX3dzXFxzcmNcXHF1YXJ0elxccXVhcnR6XFxjb21wb25lbnRzXFxzdHlsZXMiLCJzb3VyY2VzIjpbIm1lcm1haWQuaW5saW5lLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTs7QUFFQTtFQUNFO0VBQ0E7O0FBR0Y7RUFDRTtFQUNBOztBQUdGO0VBQ0U7OztBQUtGO0VBQ0U7RUFDQTs7O0FBSUo7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBOztBQUVBO0VBQ0U7O0FBR0Y7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTs7QUFFQTtFQUNFO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBOztBQUVBO0VBQ0U7RUFDQTs7QUFHRjtFQUNFO0VBQ0E7O0FBSUo7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBOztBQUVBO0VBQ0U7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTs7QUFFQTtFQUNFOztBQUdGO0VBQ0U7O0FBSUY7RUFDRTtFQUNBO0VBQ0EiLCJzb3VyY2VzQ29udGVudCI6WyIuZXhwYW5kLWJ1dHRvbiB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxvYXQ6IHJpZ2h0O1xuICBwYWRkaW5nOiAwLjRyZW07XG4gIG1hcmdpbjogMC4zcmVtO1xuICByaWdodDogMDsgLy8gTk9URTogcmlnaHQgd2lsbCBiZSBzZXQgaW4gbWVybWFpZC5pbmxpbmUudHNcbiAgY29sb3I6IHZhcigtLWdyYXkpO1xuICBib3JkZXItY29sb3I6IHZhcigtLWRhcmspO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1saWdodCk7XG4gIGJvcmRlcjogMXB4IHNvbGlkO1xuICBib3JkZXItcmFkaXVzOiA1cHg7XG4gIG9wYWNpdHk6IDA7XG4gIHRyYW5zaXRpb246IDAuMnM7XG5cbiAgJiA+IHN2ZyB7XG4gICAgZmlsbDogdmFyKC0tbGlnaHQpO1xuICAgIGZpbHRlcjogY29udHJhc3QoMC4zKTtcbiAgfVxuXG4gICY6aG92ZXIge1xuICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICBib3JkZXItY29sb3I6IHZhcigtLXNlY29uZGFyeSk7XG4gIH1cblxuICAmOmZvY3VzIHtcbiAgICBvdXRsaW5lOiAwO1xuICB9XG59XG5cbnByZSB7XG4gICY6aG92ZXIgPiAuZXhwYW5kLWJ1dHRvbiB7XG4gICAgb3BhY2l0eTogMTtcbiAgICB0cmFuc2l0aW9uOiAwLjJzO1xuICB9XG59XG5cbiNtZXJtYWlkLWNvbnRhaW5lciB7XG4gIHBvc2l0aW9uOiBmaXhlZDtcbiAgY29udGFpbjogbGF5b3V0O1xuICB6LWluZGV4OiA5OTk7XG4gIGxlZnQ6IDA7XG4gIHRvcDogMDtcbiAgd2lkdGg6IDEwMHZ3O1xuICBoZWlnaHQ6IDEwMHZoO1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBkaXNwbGF5OiBub25lO1xuICBiYWNrZHJvcC1maWx0ZXI6IGJsdXIoNHB4KTtcbiAgYmFja2dyb3VuZDogcmdiYSgwLCAwLCAwLCAwLjUpO1xuXG4gICYuYWN0aXZlIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIH1cblxuICAmID4gI21lcm1haWQtc3BhY2Uge1xuICAgIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWxpZ2h0Z3JheSk7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbGlnaHQpO1xuICAgIGJvcmRlci1yYWRpdXM6IDVweDtcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgdG9wOiA1MCU7XG4gICAgbGVmdDogNTAlO1xuICAgIHRyYW5zZm9ybTogdHJhbnNsYXRlKC01MCUsIC01MCUpO1xuICAgIGhlaWdodDogODB2aDtcbiAgICB3aWR0aDogODB2dztcbiAgICBvdmVyZmxvdzogaGlkZGVuO1xuXG4gICAgJiA+IC5tZXJtYWlkLWNvbnRlbnQge1xuICAgICAgcGFkZGluZzogMnJlbTtcbiAgICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgICAgIHRyYW5zZm9ybS1vcmlnaW46IDAgMDtcbiAgICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjFzIGVhc2U7XG4gICAgICBvdmVyZmxvdzogdmlzaWJsZTtcbiAgICAgIG1pbi1oZWlnaHQ6IDIwMHB4O1xuICAgICAgbWluLXdpZHRoOiAyMDBweDtcblxuICAgICAgcHJlIHtcbiAgICAgICAgbWFyZ2luOiAwO1xuICAgICAgICBib3JkZXI6IG5vbmU7XG4gICAgICB9XG5cbiAgICAgIHN2ZyB7XG4gICAgICAgIG1heC13aWR0aDogbm9uZTtcbiAgICAgICAgaGVpZ2h0OiBhdXRvO1xuICAgICAgfVxuICAgIH1cblxuICAgICYgPiAubWVybWFpZC1jb250cm9scyB7XG4gICAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgICBib3R0b206IDIwcHg7XG4gICAgICByaWdodDogMjBweDtcbiAgICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgICBnYXA6IDhweDtcbiAgICAgIHBhZGRpbmc6IDhweDtcbiAgICAgIGJhY2tncm91bmQ6IHZhcigtLWxpZ2h0KTtcbiAgICAgIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWxpZ2h0Z3JheSk7XG4gICAgICBib3JkZXItcmFkaXVzOiA2cHg7XG4gICAgICBib3gtc2hhZG93OiAwIDJweCA0cHggcmdiYSgwLCAwLCAwLCAwLjEpO1xuICAgICAgei1pbmRleDogMjtcblxuICAgICAgLm1lcm1haWQtY29udHJvbC1idXR0b24ge1xuICAgICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgICBhbGlnbi1pdGVtczogY2VudGVyO1xuICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbiAgICAgICAgd2lkdGg6IDMycHg7XG4gICAgICAgIGhlaWdodDogMzJweDtcbiAgICAgICAgcGFkZGluZzogMDtcbiAgICAgICAgYm9yZGVyOiAxcHggc29saWQgdmFyKC0tbGlnaHRncmF5KTtcbiAgICAgICAgYmFja2dyb3VuZDogdmFyKC0tbGlnaHQpO1xuICAgICAgICBjb2xvcjogdmFyKC0tZGFyayk7XG4gICAgICAgIGJvcmRlci1yYWRpdXM6IDRweDtcbiAgICAgICAgY3Vyc29yOiBwb2ludGVyO1xuICAgICAgICBmb250LXNpemU6IDE2cHg7XG4gICAgICAgIGZvbnQtZmFtaWx5OiB2YXIoLS1ib2R5Rm9udCk7XG4gICAgICAgIHRyYW5zaXRpb246IGFsbCAwLjJzIGVhc2U7XG5cbiAgICAgICAgJjpob3ZlciB7XG4gICAgICAgICAgYmFja2dyb3VuZDogdmFyKC0tbGlnaHRncmF5KTtcbiAgICAgICAgfVxuXG4gICAgICAgICY6YWN0aXZlIHtcbiAgICAgICAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoMXB4KTtcbiAgICAgICAgfVxuXG4gICAgICAgIC8vIFN0eWxlIHRoZSByZXNldCBidXR0b24gZGlmZmVyZW50bHlcbiAgICAgICAgJjpudGgtY2hpbGQoMikge1xuICAgICAgICAgIHdpZHRoOiBhdXRvO1xuICAgICAgICAgIHBhZGRpbmc6IDAgMTJweDtcbiAgICAgICAgICBmb250LXNpemU6IDE0cHg7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cbn1cbiJdfQ== */</style><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" spa-preserve/><script src="../../../prescript.js" type="application/javascript" spa-preserve></script><script type="application/javascript" spa-preserve>const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="https://quartz.jzhao.xyz/index.xml"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://quartz.jzhao.xyz/blog/uncategorized/2022/2022-09-03-ue5-deferred-technology-pipeline-for-mobile-games-og-image.webp"/><meta property="og:image:url" content="https://quartz.jzhao.xyz/blog/uncategorized/2022/2022-09-03-ue5-deferred-technology-pipeline-for-mobile-games-og-image.webp"/><meta name="twitter:image" content="https://quartz.jzhao.xyz/blog/uncategorized/2022/2022-09-03-ue5-deferred-technology-pipeline-for-mobile-games-og-image.webp"/><meta property="og:image:type" content="image/.webp"/></head><body data-slug="blog/uncategorized/2022/2022-09-03-ue5-deferred-technology-pipeline-for-mobile-games"><div id="quartz-root" class="page"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">Quartz 4</a></h2><div class="spacer mobile-only"></div><div style="display: flex; flex-direction: row; flex-wrap: nowrap; gap: 1rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button"><p>Search</p><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something" placeholder="Search for something"/><div class="search-layout" data-preview="true"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a,b)=>!a.isFolder&amp;&amp;!b.isFolder||a.isFolder&amp;&amp;b.isFolder?a.displayName.localeCompare(b.displayName,void 0,{numeric:!0,sensitivity:\&quot;base\&quot;}):!a.isFolder&amp;&amp;b.isFolder?1:-1&quot;,&quot;filterFn&quot;:&quot;node=>node.slugSegment!==\&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;node=>node&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-content"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div class="explorer-content" aria-expanded="false"><ul class="explorer-ul overflow" id="t6tmuo"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#"></a></li></template><template id="template-folder"><li><div class="folder-container"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../blog/">blog</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../blog/uncategorized/">uncategorized</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../blog/uncategorized/2022/">2022</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>[演講筆記][UnrealEngine] UE5 Deferred Technology Pipeline for Mobile Games</a></div></nav><h1 class="article-title">[演講筆記][UnrealEngine] UE5 Deferred Technology Pipeline for Mobile Games</h1><p show-comma="true" class="content-meta"><time datetime="2022-09-03T00:00:00.000Z">Sep 03, 2022</time><span>13 min read</span></p><ul class="tags"><li><a href="../../../tags/wordpress" class="internal tag-link">wordpress</a></li></ul></div></div><article class="popover-hint"><p>花了一些時間把EpicGameChina關於Mobile Deferred Render的演講看完並做了一些筆記，分享給大家，也推薦大家去看影片，我是覺得收獲蠻多的。</p>
+<p>影片在此：<a href="https://www.youtube.com/watch?v=GQoSjEii4nk" class="external">UE5 Deferred Technology Pipeline for Mobile Games<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<ol>
+<li>
+<p>Mobile Deferred Render直到5.1才算比較成熟</p>
+</li>
+<li>
+<p>Deferred的優勢在於可以減少shader permutation，因為在base pass不用算lighting，因此相關的permutation就可以從model material直接decouple出來，省下大量的shader數量。</p>
+</li>
+<li>
+<p>mobile deferred vs mobile forward在關掉static lighting的比較：</p>
+</li>
+</ol>
+<p>        a. Mobile Deferred只需要建出LMP_NO_LIGHTMAP一種caseb. Mobile Forward則需要建出LMP_NO_LIGHTMAP跟LMP_MOBILE_DIRECTIONAL_LIGHT_CSM搭上bEnableLocalLights開關，總共有四種case。</p>
+<p>        c. Mobile Deferred的shader總量是Mobile Forward的1/4。</p>
+<p>        d. LMP指的是LightingMapPolicy，所有的Type參數ELightMapPolicyType這個enum</p>
+<p> 4. mobile deferred vs mobile forward在打開static lighting後大約是原本的1/5大小</p>
+<p> 5. 減少Shader大小代表我們打包出來的pak變小，而且也能降低記憶體的使用量，另外也可以減少因為run-time compiling shader所造成的卡頓。</p>
+<p>        a. 註：run-time compiling shader的卡頓可以使用PSO Caching的機制解決，只不過這個方法會要求團隊在打包之前先跑一次版本以記錄用到的材質。</p>
+<p> 6. Deferred Render因為base pass沒有複雜的光照計算，因此這階段的開銷比forward減少很多，而且光照只在可見的pixel上做計算，不會浪費GPU在不可見的pixel上，理論上對於減少GPU壓力是有幫助的。</p>
+<p>        a. 不過現在的晶片大多內建了減少OverDraw的技術，例如PowerVR GPU的Hidden Surface Removal，以及Arm GPU的Forward pixel kill，即便如此，在某些device上還是能有明顯的收益的。</p>
+<p> 7. Deferred Render可以把原本Foward要保留給光照用的Sampler讓出來給美術使用，最多能多出6~7個Sampler。大致上的數量如下</p>
+<p>        a. Reflection capture可以減少1到2個</p>
+<p>        b. Shadow texture減少1個</p>
+<p>        c. Planar reflection 1個</p>
+<p>        d. Light grid data減少3個。</p>
+<p> 8. 雖然Deferred Render需要創建多張G-Buffer，但我們可以利用tile-based GPU的特性，把GBuffer分配在Tile Memory上，這樣就可以不需要用到System memory，從而減少傳輸成本。只不過這招會讓我們無法在PostProcess存取到GBuffer的資料，這也就是為什麼目前mobile不支援screen space reflection的原因之一。</p>
+<p> 9. 以下功能是Deferred Render才有的功能：</p>
+<p>        a. Lit deferred decal：forward的decal是無光照的，而deferred render因為有了GBuffer，可以靠上面的資料來計算光照效果。</p>
+<p>        b. IES Profile</p>
+<p>        c. Light Function</p>
+<p>        d. Better EnvBRDF：Deferred的效果上會更閱近PC，不需要real-time計算，只需要做一次貼圖採樣就行了，因此性能更好；而foward因為要省下一個sampler，因此採用的是近似的版本在real-time做計算。</p>
+<p> 10. Deferred Render在Android手機上有遇到一些兼容性問題，因此在設計系統時會考慮以下幾個限制。</p>
+<p>        a. 對於OpenGLES的支援：由於Mali不支援MRT(Multiple Render Targets)的FrameBufferFetch，因此使用了Pixel Local Storage的技術，但用了這個技術的限制是，它只有128 bit。</p>
+<p>        b. 對於Vulkan的支援：調查了市面上的Android手機，發現有16%左右的機器只支援4個Input Attachment。</p>
+<p> 11. 由於GBuffer和SceneDepth都會算在InputAttachment上，為了支援16%只有4個Input Attachment的機器，引擎只能把GBuffer的數量控制在3個，再加上一個SceneDepth就到了4個上限。不像PC可以創出5張或更多的GBuffer來支援一些效果。</p>
+<p> 12. 每個平台都會有以下幾個Buffer：SceneColor、SceneDepth以及GBufferA、GBufferB、GBufferC。其中SceneDepth如果PP用不到就不需存下來以節省頻寬。</p>
+<p> 13. 在Android Mali OpenGLES上我們是把GBuffer利用Pixel Local Storage存在Tiled Memory上，再加上32bit的SceneColor，剛好佔滿Pixel Local Storage的128 bit。</p>
+<p> 14. Vulkan或Qualcommon的GLES手機，我們是用Memoryless的方式把GBuffer建立在TileMemory上。</p>
+<p>        a. 注：Memoryless代表該份資料只會存在於TileMemory而不會回存到System Memory，這也就代表PostProcess存取不到GBuffer上的資料。</p>
+<p> 15. 在IOS或其他PowerVR的Android GLES手機：因為GPU不支持DepthBufferFech，只能用MRT的FrameBufferFetch，所以只能新申請一張32bit的DepthAux來存Depth。DepthAux跟GBuffer一樣是memoryless，所以不佔回寫到System Memory的頻寬，只是需要處理一下shader fetch depth的邏輯。</p>
+<p> 16. 在UE4中不支援shading model只能支援defaultLit，要支援shading model的話，就要必須要有至少4個通道來存儲custom data，最好每個通道都有8 bit，不然精度不太足。正常情況下我們可以多申請GBuffer來達成這件事，但是因為硬體的限制只能有4個Input Attachment，所以我們只能想辦法挖東牆補西牆。</p>
+<p> 17. 前提是，在Mobile Deferred Render上我們我們只有GBufferA、GBufferB、GBufferC，每張Buffer都有32 bit，裡面各別存了下面資料：</p>
+<p>        a. GBufferA：</p>
+<ul>
+<li>
+<p>            Encoded Normal.xy：由於normal的z可以靠cross product算出來，因此只需要xy二個通道就行了，但由於normal在某些情況下需要比較高的精度，例如在一些反射比較好的效果下，如果只用8 bit可能會看到一些瑕疵，因此xy各別用10 bit保存，共20 bit。</p>
+</li>
+<li>
+<p>            ShadingModelID：佔用4 bit。</p>
+</li>
+<li>
+<p>            PerObject Data：在Mobile中沒有使用</p>
+</li>
+</ul>
+<p>        b. GBufferB：Metallic、Specular、Roughness以及Indirect Irradiance，各別佔用8 bit。</p>
+<p>        c. GBufferC：BaseColor.RGB佔用24 bit、Precomputed Shade 8 bit。</p>
+<p> 18. 以上資料有一些東西可以省下來讓給CustomData用</p>
+<p>        a. GBufferA：PerObject Data有8 bit在Mobile中沒有使用，可以拿出來。</p>
+<p>        b. GBufferB中的Metallic在很多ShadingMode中沒有用到，可以拿出來。</p>
+<p>        c. GBufferB跟GBufferC中的Indirect Irradiance只在靜態光照下用到，限制只能開動態光的話就能拿出來給CustomData用。</p>
+<p>        d. 以上共4個通道可以在只有動態光條件下空出來給CustomData</p>
+<p> 19. 影片上有詳細講解Buffer Layout裡面各別存了什麼東西的細節，建議大家去看。</p>
+<p> 20. 目前UE5.1中在關掉靜態光的情況下已經可以支援所有的Shading Model</p>
+<p> 21. Eye shading model有一點特殊，它用到了subsurface profile shading model，所以在Mobile上它用了5個custom data，所以我們就只能把其中二個custom data壓縮到一個通道裡。所會如果看到結果感覺到精度不足，很有可能就是這個原因。</p>
+<p> 22. 由於GBuffer已經把Tiled Memory都佔用了，因此不能使用MSAA，因此目前引擎只支援FXAA跟TAA跟5.1新增由AMD研發的FSR技術。雖然FSR的效率上比不上有硬體支援的MSAA，不過效果不差。</p>
+<ol start="23">
+<li>
+<p>補充FSR：由官網的資料看來，他是個可以用在全平台的技術，不像NVDIA的DLSS需要用到GeForce RTX上專門的Tensor核心。</p>
+</li>
+<li>
+<p>關於lighting跟shadow的支援狀況：</p>
+</li>
+</ol>
+<p>        a. Directional light pass：支援Light function material、Clustered local light(runtime toggle：r.Mobile.UseClusteredDeferredShading)、planar reflection、CSM and distance field shadow以及Reflection。</p>
+<p>        b. Reflection and sky pass：如果只有一個方向光就會合併到Directional light pass裡一起做(inline)，不然為了避重覆計算會統一在這個pass做。</p>
+<p>        c. Local Light pass：Light area masked with stencil、support movable spot light shadow、support IES Profile、Support light function。Local light是分二次繪制的，第一次是用stencil 報標記燈光所覆蓋的區域，第二次是在這個區域的像素裡去著色，也是為了性能優化。</p>
+<p>        d. Simple light pass：這個是粒子裡創建的簡單光源，通常它是在clustered local light階段繪制的，如果沒有開啟clustered local light，才會有自己的pass。它的過程和local light的pass類似。</p>
+<p> 25. 在UE5.1中，mobile上也支持了Deferred render lighting channel，不過我們的方式跟PC上的不太一樣，因為PC上是把Lighting channel寫到stencil buffer裡，然後在shader裡面去讀取，這個對於mobile device來說有點困難。因為OpenGLES不支持TextureView的擴展，所以我們在硬體上就是直接在stencil test上做。</p>
+<ol start="26">
+<li>在硬體上就是直接在stencil test上做的方法如下：我們只遍歷所有的燈光，只做一次lighting channel的stencil test。但由於每一盞燈只支持一個lighting channel，如果有多個lighting channel的話就會出錯。這也是美術上需要留意的地方。</li>
+</ol>
+<p> 27. 關於優化，我們主要是做了以下二個優化</p>
+<p>        a. 只在必須的情況下才去把數據存下來，比如DepthAux，我們直接申明成memory less，又因為我們不支持MSAA，所以GBuffe也可以弄成memory less。還有就是SceneDepth，只在需要的時候才用到，如果PP階段沒有用到Depth的訊息我們就可以不用存下來。</p>
+<p>        b. 另外我們發現開啟deferred rendering之後，半透明階段的渲染耗時比以前高，後來是發現是因為半透明階段，默認也開了Clustered local light和Clustered reflection，這個對性能有比較明顯的影響。然後我們本身對於半透明的光照和反射效果的需求並沒有那麼高，所以我們在半透明階段關掉這些計算，這樣半透明的效率就和forward持平了。</p>
+<p> 28. fornite在season 22會開啟，有做了初步的測試，發現，如果用vulkan的話性能會有普遍改善、卡頓變少，不過OpenGLES測下來發現性能會變差，後來發現是因為DXC轉譯Shader有點問題導致性能下降，並不是因為deferred rendering的問題，後續會修覆之後再針對OpenGLES打開</p>
+<p>===================================</p>
+<p>廣告時間</p>
+<p>我有建立unreal discord討論區，歡迎大家加入一起討論： <a href="https://ref.gamer.com.tw/redir.php?url=https%3A%2F%2Fdiscord.gg%2FFanK6yc" class="external">https://discord.gg/FanK6yc<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p>我在Marketplace上有上架不少Plugin，歡迎大家選購： <a href="https://www.unrealengine.com/marketplace/en-US/profile/horizon-studio" class="external">https://www.unrealengine.com/marketplace/en-US/profile/horizon-studio<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v4.5.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script type="application/javascript">function o(){let t=this.parentElement;t.classList.toggle("is-collapsed");let e=t.classList.contains("is-collapsed")?this.scrollHeight:t.scrollHeight;t.style.maxHeight=e+"px";let c=t,l=t.parentElement;for(;l;){if(!l.classList.contains("callout"))return;let i=l.classList.contains("is-collapsed")?l.scrollHeight:l.scrollHeight+c.scrollHeight;l.style.maxHeight=i+"px",c=l,l=l.parentElement}}function n(){let t=document.getElementsByClassName("callout is-collapsible");for(let s of t){let e=s.firstElementChild;if(!e)continue;e.addEventListener("click",o),window.addCleanup(()=>e.removeEventListener("click",o));let l=s.classList.contains("is-collapsed")?e.scrollHeight:s.scrollHeight;s.style.maxHeight=l+"px"}}document.addEventListener("nav",n);
+</script><script type="module">function f(i,e){if(!i)return;function r(o){o.target===this&&(o.preventDefault(),o.stopPropagation(),e())}function t(o){o.key.startsWith("Esc")&&(o.preventDefault(),e())}i?.addEventListener("click",r),window.addCleanup(()=>i?.removeEventListener("click",r)),document.addEventListener("keydown",t),window.addCleanup(()=>document.removeEventListener("keydown",t))}function y(i){for(;i.firstChild;)i.removeChild(i.firstChild)}var h=class{constructor(e,r){this.container=e;this.content=r;this.setupEventListeners(),this.setupNavigationControls(),this.resetTransform()}isDragging=!1;startPan={x:0,y:0};currentPan={x:0,y:0};scale=1;MIN_SCALE=.5;MAX_SCALE=3;cleanups=[];setupEventListeners(){let e=this.onMouseDown.bind(this),r=this.onMouseMove.bind(this),t=this.onMouseUp.bind(this),o=this.resetTransform.bind(this);this.container.addEventListener("mousedown",e),document.addEventListener("mousemove",r),document.addEventListener("mouseup",t),window.addEventListener("resize",o),this.cleanups.push(()=>this.container.removeEventListener("mousedown",e),()=>document.removeEventListener("mousemove",r),()=>document.removeEventListener("mouseup",t),()=>window.removeEventListener("resize",o))}cleanup(){for(let e of this.cleanups)e()}setupNavigationControls(){let e=document.createElement("div");e.className="mermaid-controls";let r=this.createButton("+",()=>this.zoom(.1)),t=this.createButton("-",()=>this.zoom(-.1)),o=this.createButton("Reset",()=>this.resetTransform());e.appendChild(t),e.appendChild(o),e.appendChild(r),this.container.appendChild(e)}createButton(e,r){let t=document.createElement("button");return t.textContent=e,t.className="mermaid-control-button",t.addEventListener("click",r),window.addCleanup(()=>t.removeEventListener("click",r)),t}onMouseDown(e){e.button===0&&(this.isDragging=!0,this.startPan={x:e.clientX-this.currentPan.x,y:e.clientY-this.currentPan.y},this.container.style.cursor="grabbing")}onMouseMove(e){this.isDragging&&(e.preventDefault(),this.currentPan={x:e.clientX-this.startPan.x,y:e.clientY-this.startPan.y},this.updateTransform())}onMouseUp(){this.isDragging=!1,this.container.style.cursor="grab"}zoom(e){let r=Math.min(Math.max(this.scale+e,this.MIN_SCALE),this.MAX_SCALE),t=this.content.getBoundingClientRect(),o=t.width/2,n=t.height/2,c=r-this.scale;this.currentPan.x-=o*c,this.currentPan.y-=n*c,this.scale=r,this.updateTransform()}updateTransform(){this.content.style.transform=`translate(${this.currentPan.x}px, ${this.currentPan.y}px) scale(${this.scale})`}resetTransform(){this.scale=1;let e=this.content.querySelector("svg");this.currentPan={x:e.getBoundingClientRect().width/2,y:e.getBoundingClientRect().height/2},this.updateTransform()}},C=["--secondary","--tertiary","--gray","--light","--lightgray","--highlight","--dark","--darkgray","--codeFont"],E;document.addEventListener("nav",async()=>{let e=document.querySelector(".center").querySelectorAll("code.mermaid");if(e.length===0)return;E||=await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.esm.min.mjs");let r=E.default,t=new WeakMap;for(let n of e)t.set(n,n.innerText);async function o(){for(let s of e){s.removeAttribute("data-processed");let a=t.get(s);a&&(s.innerHTML=a)}let n=C.reduce((s,a)=>(s[a]=window.getComputedStyle(document.documentElement).getPropertyValue(a),s),{}),c=document.documentElement.getAttribute("saved-theme")==="dark";r.initialize({startOnLoad:!1,securityLevel:"loose",theme:c?"dark":"base",themeVariables:{fontFamily:n["--codeFont"],primaryColor:n["--light"],primaryTextColor:n["--darkgray"],primaryBorderColor:n["--tertiary"],lineColor:n["--darkgray"],secondaryColor:n["--secondary"],tertiaryColor:n["--tertiary"],clusterBkg:n["--light"],edgeLabelBackground:n["--highlight"]}}),await r.run({nodes:e})}await o(),document.addEventListener("themechange",o),window.addCleanup(()=>document.removeEventListener("themechange",o));for(let n=0;n<e.length;n++){let v=function(){let g=l.querySelector("#mermaid-space"),m=l.querySelector(".mermaid-content");if(!m)return;y(m);let w=c.querySelector("svg").cloneNode(!0);m.appendChild(w),l.classList.add("active"),g.style.cursor="grab",u=new h(g,m)},M=function(){l.classList.remove("active"),u?.cleanup(),u=null},c=e[n],s=c.parentElement,a=s.querySelector(".clipboard-button"),d=s.querySelector(".expand-button"),p=window.getComputedStyle(a),L=a.offsetWidth+parseFloat(p.marginLeft||"0")+parseFloat(p.marginRight||"0");d.style.right=`calc(${L}px + 0.3rem)`,s.prepend(d);let l=s.querySelector("#mermaid-container");if(!l)return;let u=null;d.addEventListener("click",v),f(l,M),window.addCleanup(()=>{u?.cleanup(),d.removeEventListener("click",v)})}});
+</script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript"></script><script src="../../../postscript.js" type="module"></script></html>

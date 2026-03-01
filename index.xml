@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>Quartz 4</title>
+      <link>https://quartz.jzhao.xyz</link>
+      <description>Last 10 notes on Quartz 4</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>Blog</title>
+    <link>https://quartz.jzhao.xyz/</link>
+    <guid>https://quartz.jzhao.xyz/</guid>
+    <description>Blog This site is generated from Obsidian source: PARA/01_Area/blog Categories algorithm asio career cpp devlog java linux math server software-engineering tips uncategorized unrealengine .</description>
+    <pubDate>Sun, 01 Mar 2026 17:45:23 GMT</pubDate>
+  </item><item>
+    <title>[UnrealEngine] Plugin製作相關注意事項與心得分享</title>
+    <link>https://quartz.jzhao.xyz/blog/uncategorized/2024/2024-04-01-plugin</link>
+    <guid>https://quartz.jzhao.xyz/blog/uncategorized/2024/2024-04-01-plugin</guid>
+    <description>前言 寫出一套好用好維護的程式碼相信會是所有程式設計師無意識中追求的目標，而把自己的功能包裝成Plugin是一個非常直接達成這個目的的手段，因為設計的過程會強迫把自己置更高、更抽象的位置往下俯瞰整個遊戲系統並定位出自己的功能應該在哪個位置。 只是，並不是任何的程式碼都適合放進Plugin中。因此接下來我的目的主要是想根據自己過去的經驗，分享一些自己在寫各種Plugin時的大原則。雖然這些想法不一定適用於所有的情境，應該也會有許多我沒考慮到的狀況，但基本上也就只是目前在我有限的經驗中現階段的想法。如果有人有不一樣的觀點也歡迎一起討論，或許可以碰撞出一些東西也說不定。 順帶一提，這邊的Plugin...</description>
+    <pubDate>Mon, 01 Apr 2024 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[UnrealEngine] 淺談GameFeature Plugin</title>
+    <link>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-05-23-gamefeature-plugin</link>
+    <guid>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-05-23-gamefeature-plugin</guid>
+    <description>GameFeaturePlugin，這個功能是5.0最大的變革之一，對程式相關職能的人而言，我覺得重要性甚至更勝於nanite跟lumen，因為相關機制會從根本性上的改變了我們程式碼的架構方式以及思考模式。 不知道這東西的人可以先看一下官方介紹：docs.unrealengine.com/…/game-features…/ 以下就先來粗略的分享一些我目前對這功能的理解吧： 就他的設計理念看來，他是屬於DLC概念的實現，跟Patch不同，Patch需要蓋掉原本的內容，而DLC必須要做到「熱插拔」的機制。 就傳統UE4 project，我們要達到DLC的這項要求非常麻煩，因為我們只能對「Conte...</description>
+    <pubDate>Tue, 23 May 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[UnrealEngine][開發日誌] 5.1升級到5.2時遇到的有關於AutomationTest的坑</title>
+    <link>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-03-24-automationtest</link>
+    <guid>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-03-24-automationtest</guid>
+    <description>最近5.2 preview 1發布了，想說可以開始來升級我的plugin。由於我的plugin有寫一些automation test來幫忙做unit test跟functional test，這樣我就可以省下一些QA的時間。只是在把Plugin升上5.2之後，突然發現之前寫的Automation Test都不會跑了。 在花了一些時間除錯之後，總算發現原因在哪了。結論是：Unreal在5.2之後有做以下幾個更改會影響到這個功能。 第一點：用來過濾來跑哪些Test的FilterPrefix原本是「Filter:」，在5.2的時候改成了「StartsWith:」，因此我們的的AutomationTe...</description>
+    <pubDate>Fri, 24 Mar 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[開發日誌][UnrealEngine] PainCausingVolume如何結合GAS中的GameplayEffect使用</title>
+    <link>https://quartz.jzhao.xyz/blog/devlog/2023/2023-02-27-paincausingvolume-gas-gameplayeffect</link>
+    <guid>https://quartz.jzhao.xyz/blog/devlog/2023/2023-02-27-paincausingvolume-gas-gameplayeffect</guid>
+    <description>最近在思考怎麼做毒沼澤的功能，發現引擎中內建PainCausingVolume還蠻符合自己需求的，我們可以在這個Volume上設定傷害數值，並且設定每隔幾秒才觸發事件。 不過由於我的測試專案高度集成GameplayAbilitySystem(GAS)，因此會希望所有的角色的數值變化操作都透過系統中的GameplayEffect來執行。由於PainCausingVolume跟GAS系統並沒有相依關係，為了這個機制要另外刻一個Volume又感覺有點多餘。不過好加在GAS系統本身製作的彈性還蠻大的，因此是有方法可以把這種外部的傷害數值注入，後續的傷害計算跟數值的加減就可以延著原本系統設計的邏輯進行，...</description>
+    <pubDate>Mon, 27 Feb 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[開發日誌][UnrealEngine] 如何將Mixamo的動畫Retarget給Unreal Character</title>
+    <link>https://quartz.jzhao.xyz/blog/uncategorized/2023/2023-02-19-mixamo-retarget-unreal-character</link>
+    <guid>https://quartz.jzhao.xyz/blog/uncategorized/2023/2023-02-19-mixamo-retarget-unreal-character</guid>
+    <description>這篇文章主要是要記錄自己怎麼把Mixamo中的動畫導出來給Unreal中的Mannequin用，以及除何修正中途遇到的一些坑。 使用版本：5.1 使用的是Third Person Template 第一步當然是先從Mixamo下載看中想使用的動畫。 由於Mixamo的骨架跟Unreal不相容，主要原因Mixamo是少了一個root，這會造成root motion沒辦法正常運作。我們可以下載 mixamo_convert這個Blender Addons來幫我們加上一個root bone。 如下圖，右邊加上root的是我們希望的狀態： 這邊要注意的是，Blender Addons的安裝要使用zip...</description>
+    <pubDate>Sun, 19 Feb 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[開發日誌][UnrealEngine] 如何自動排序原始碼中的include</title>
+    <link>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-02-14-include</link>
+    <guid>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-02-14-include</guid>
+    <description>之前在寫code的時候，發現某個cpp檔中的include了一大堆其他module中的檔案，而且其中一大堆重覆include，越看越覺得亂，然後心中的潔癖突然發作想要好好的整頓一番。第一個想法是，如果我們的include能夠自動依字母排序，這樣就能夠很清楚的看出有哪些include重覆了，若我們能好好的依不同的module進行分類，還能夠清楚的知道我們用到了各別module中的哪些功能。 查詢了一下，其實VisualStudio中還真的有相關的功能，他的快速鍵是Shift+Alt+L, Shift+Alt+S： 由於我有買Visual Assist X，因此另外也試了一下它的版本，並把快速鍵設...</description>
+    <pubDate>Tue, 14 Feb 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>關於數學的本質的理解</title>
+    <link>https://quartz.jzhao.xyz/blog/math/2023/2023-02-09-post-1823</link>
+    <guid>https://quartz.jzhao.xyz/blog/math/2023/2023-02-09-post-1823</guid>
+    <description>最近無意間看到台大數學系教授關於數學的本質這堂課，讓我開始思考到底什麼是數學。以前大學的時候上課就是不斷的在背公式、解題以及背下證明題的步驟，等考完試之後所有的東西就全部還給老師了，從來不記得自己到底在算了什麼跟證明了什麼。因此，這堂課對我的衝擊其實蠻大的，從來沒有人從公理化數學的角度切入並介紹相關的概念給自己。 只是關於何謂公理系統，雖然在ChatGPT的補助之下自己有一些結論，但這些結論是否正確自己也不是很有把握，有任何問題也歡迎一起討論。 以下是我對數學本質的理解： 數學的本質就是遊戲設計，遊戲設計的本質就是在創造世界。 公理等同於遊戲規則，一套規則可以組成一個遊戲(公理系統)。你可以覺...</description>
+    <pubDate>Thu, 09 Feb 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[UnrealEngine] 如何使用DataFragment設計進行資料欄位擴充</title>
+    <link>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-01-19-datafragment</link>
+    <guid>https://quartz.jzhao.xyz/blog/unrealengine/2023/2023-01-19-datafragment</guid>
+    <description>本文章內容基於UnrealEngine5.1版本 最近在看5.0新導入的MassFramework，看到裡面出現了FInstanceStruct這個詞引起了我的興趣。基本上這東西可以讓我們動態選擇struct，而在Unreal中是把這種組裝用的property稱為Fragment。這個概念我第一次看到是在Unreal官方釋出的Lyra範例專案中看到，只是當時實驗了一下，由於他是使用UObject搭上reflection macro來實現，我沒辦法把一個UObject直接放進DataTable的Row中做編輯。這帶來的結果，就是當我在製作Plugin的時候，若需要用到DataTable時，必須要...</description>
+    <pubDate>Thu, 19 Jan 2023 00:00:00 GMT</pubDate>
+  </item><item>
+    <title>[UnrealEngine][讀書心得] 關於UnrealEngine中的ISPC與SIMD的一些雜談</title>
+    <link>https://quartz.jzhao.xyz/blog/uncategorized/2023/2023-01-04-unrealengine-ispc-simd</link>
+    <guid>https://quartz.jzhao.xyz/blog/uncategorized/2023/2023-01-04-unrealengine-ispc-simd</guid>
+    <description>SIMD(Single Instruction Multiple Data)指的是用一個指令同時處理多個資料這個概念，只是我們常常被誤導說，在CPU上可以使用SIMD指令來加速──這種說法其實並不精確。對，我就是被誤導的那個。在UE4.23時官方整合了ISPC，以更好的幫助CPU做平行化加速，我之前一直把這東西跟SIMD畫上等號，沒去仔細思考這東西的存在到底想解決什麼問題。 根據指令數跟跟資料的處理方式，這個概念其實是根據Flynn’s Taxonomy來進行分類，而SIMD只是其中一種。 SIMD就現行的計算機架構上，分為以下三種： Vector Architecture：這個架構在以前是是...</description>
+    <pubDate>Wed, 04 Jan 2023 00:00:00 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>

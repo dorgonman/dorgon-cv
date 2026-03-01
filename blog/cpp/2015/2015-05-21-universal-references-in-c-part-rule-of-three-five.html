@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en"><head><title>[讀書筆記]Universal References in C++11 part 3: 記憶體管理以及Rule of Three(Five)</title><meta charset="utf-8"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=Schibsted Grotesk:wght@400;700&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Quartz 4"/><meta property="og:title" content="[讀書筆記]Universal References in C++11 part 3: 記憶體管理以及Rule of Three(Five)"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="[讀書筆記]Universal References in C++11 part 3: 記憶體管理以及Rule of Three(Five)"/><meta name="twitter:description" content="[insert page=‘338’ display=‘link’] 上一篇主要介紹了rvalue reference的概念，以及它導入用來解決無法區分lvalue reference以及暫存物件之間的copy問題。基本上這些操作的本質，其實也就是怎麼用更有效率、更簡單的方法去控管我們所使用的資源而已。──記憶體管理，一直是C++程式設計中一個非常重要的課題。 一個最常被提到的準則便是RAII的概念。何謂RAII？全名Resource Acquisition Is Initialisation，意即所有接下來這個物件所會用到的資源，在建構階段就已經全部建立完成。例如檔案的開啟、變數的初始化或記..."/><meta property="og:description" content="[insert page=‘338’ display=‘link’] 上一篇主要介紹了rvalue reference的概念，以及它導入用來解決無法區分lvalue reference以及暫存物件之間的copy問題。基本上這些操作的本質，其實也就是怎麼用更有效率、更簡單的方法去控管我們所使用的資源而已。──記憶體管理，一直是C++程式設計中一個非常重要的課題。 一個最常被提到的準則便是RAII的概念。何謂RAII？全名Resource Acquisition Is Initialisation，意即所有接下來這個物件所會用到的資源，在建構階段就已經全部建立完成。例如檔案的開啟、變數的初始化或記..."/><meta property="og:image:alt" content="[insert page=‘338’ display=‘link’] 上一篇主要介紹了rvalue reference的概念，以及它導入用來解決無法區分lvalue reference以及暫存物件之間的copy問題。基本上這些操作的本質，其實也就是怎麼用更有效率、更簡單的方法去控管我們所使用的資源而已。──記憶體管理，一直是C++程式設計中一個非常重要的課題。 一個最常被提到的準則便是RAII的概念。何謂RAII？全名Resource Acquisition Is Initialisation，意即所有接下來這個物件所會用到的資源，在建構階段就已經全部建立完成。例如檔案的開啟、變數的初始化或記..."/><meta property="twitter:domain" content="quartz.jzhao.xyz"/><meta property="og:url" content="https://quartz.jzhao.xyz/blog/cpp/2015/2015-05-21-universal-references-in-c-part-rule-of-three-five"/><meta property="twitter:url" content="https://quartz.jzhao.xyz/blog/cpp/2015/2015-05-21-universal-references-in-c-part-rule-of-three-five"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="[insert page=‘338’ display=‘link’] 上一篇主要介紹了rvalue reference的概念，以及它導入用來解決無法區分lvalue reference以及暫存物件之間的copy問題。基本上這些操作的本質，其實也就是怎麼用更有效率、更簡單的方法去控管我們所使用的資源而已。──記憶體管理，一直是C++程式設計中一個非常重要的課題。 一個最常被提到的準則便是RAII的概念。何謂RAII？全名Resource Acquisition Is Initialisation，意即所有接下來這個物件所會用到的資源，在建構階段就已經全部建立完成。例如檔案的開啟、變數的初始化或記..."/><meta name="generator" content="Quartz"/><link href="../../../index.css" rel="stylesheet" type="text/css" spa-preserve/><style>.expand-button {
+  position: absolute;
+  display: flex;
+  float: right;
+  padding: 0.4rem;
+  margin: 0.3rem;
+  right: 0;
+  color: var(--gray);
+  border-color: var(--dark);
+  background-color: var(--light);
+  border: 1px solid;
+  border-radius: 5px;
+  opacity: 0;
+  transition: 0.2s;
+}
+.expand-button > svg {
+  fill: var(--light);
+  filter: contrast(0.3);
+}
+.expand-button:hover {
+  cursor: pointer;
+  border-color: var(--secondary);
+}
+.expand-button:focus {
+  outline: 0;
+}
+
+pre:hover > .expand-button {
+  opacity: 1;
+  transition: 0.2s;
+}
+
+#mermaid-container {
+  position: fixed;
+  contain: layout;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: none;
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+}
+#mermaid-container.active {
+  display: inline-block;
+}
+#mermaid-container > #mermaid-space {
+  border: 1px solid var(--lightgray);
+  background-color: var(--light);
+  border-radius: 5px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 80vh;
+  width: 80vw;
+  overflow: hidden;
+}
+#mermaid-container > #mermaid-space > .mermaid-content {
+  padding: 2rem;
+  position: relative;
+  transform-origin: 0 0;
+  transition: transform 0.1s ease;
+  overflow: visible;
+  min-height: 200px;
+  min-width: 200px;
+}
+#mermaid-container > #mermaid-space > .mermaid-content pre {
+  margin: 0;
+  border: none;
+}
+#mermaid-container > #mermaid-space > .mermaid-content svg {
+  max-width: none;
+  height: auto;
+}
+#mermaid-container > #mermaid-space > .mermaid-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  color: var(--dark);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: var(--bodyFont);
+  transition: all 0.2s ease;
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button:hover {
+  background: var(--lightgray);
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button:active {
+  transform: translateY(1px);
+}
+#mermaid-container > #mermaid-space > .mermaid-controls .mermaid-control-button:nth-child(2) {
+  width: auto;
+  padding: 0 12px;
+  font-size: 14px;
+}
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiRTpcXG9ic2lkaWFuXFxkb3Jnb24tbm90ZVxcX3dzXFxzcmNcXHF1YXJ0elxccXVhcnR6XFxjb21wb25lbnRzXFxzdHlsZXMiLCJzb3VyY2VzIjpbIm1lcm1haWQuaW5saW5lLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTs7QUFFQTtFQUNFO0VBQ0E7O0FBR0Y7RUFDRTtFQUNBOztBQUdGO0VBQ0U7OztBQUtGO0VBQ0U7RUFDQTs7O0FBSUo7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBOztBQUVBO0VBQ0U7O0FBR0Y7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTs7QUFFQTtFQUNFO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBOztBQUVBO0VBQ0U7RUFDQTs7QUFHRjtFQUNFO0VBQ0E7O0FBSUo7RUFDRTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBOztBQUVBO0VBQ0U7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTtFQUNBO0VBQ0E7RUFDQTs7QUFFQTtFQUNFOztBQUdGO0VBQ0U7O0FBSUY7RUFDRTtFQUNBO0VBQ0EiLCJzb3VyY2VzQ29udGVudCI6WyIuZXhwYW5kLWJ1dHRvbiB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxvYXQ6IHJpZ2h0O1xuICBwYWRkaW5nOiAwLjRyZW07XG4gIG1hcmdpbjogMC4zcmVtO1xuICByaWdodDogMDsgLy8gTk9URTogcmlnaHQgd2lsbCBiZSBzZXQgaW4gbWVybWFpZC5pbmxpbmUudHNcbiAgY29sb3I6IHZhcigtLWdyYXkpO1xuICBib3JkZXItY29sb3I6IHZhcigtLWRhcmspO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1saWdodCk7XG4gIGJvcmRlcjogMXB4IHNvbGlkO1xuICBib3JkZXItcmFkaXVzOiA1cHg7XG4gIG9wYWNpdHk6IDA7XG4gIHRyYW5zaXRpb246IDAuMnM7XG5cbiAgJiA+IHN2ZyB7XG4gICAgZmlsbDogdmFyKC0tbGlnaHQpO1xuICAgIGZpbHRlcjogY29udHJhc3QoMC4zKTtcbiAgfVxuXG4gICY6aG92ZXIge1xuICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICBib3JkZXItY29sb3I6IHZhcigtLXNlY29uZGFyeSk7XG4gIH1cblxuICAmOmZvY3VzIHtcbiAgICBvdXRsaW5lOiAwO1xuICB9XG59XG5cbnByZSB7XG4gICY6aG92ZXIgPiAuZXhwYW5kLWJ1dHRvbiB7XG4gICAgb3BhY2l0eTogMTtcbiAgICB0cmFuc2l0aW9uOiAwLjJzO1xuICB9XG59XG5cbiNtZXJtYWlkLWNvbnRhaW5lciB7XG4gIHBvc2l0aW9uOiBmaXhlZDtcbiAgY29udGFpbjogbGF5b3V0O1xuICB6LWluZGV4OiA5OTk7XG4gIGxlZnQ6IDA7XG4gIHRvcDogMDtcbiAgd2lkdGg6IDEwMHZ3O1xuICBoZWlnaHQ6IDEwMHZoO1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBkaXNwbGF5OiBub25lO1xuICBiYWNrZHJvcC1maWx0ZXI6IGJsdXIoNHB4KTtcbiAgYmFja2dyb3VuZDogcmdiYSgwLCAwLCAwLCAwLjUpO1xuXG4gICYuYWN0aXZlIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIH1cblxuICAmID4gI21lcm1haWQtc3BhY2Uge1xuICAgIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWxpZ2h0Z3JheSk7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbGlnaHQpO1xuICAgIGJvcmRlci1yYWRpdXM6IDVweDtcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgdG9wOiA1MCU7XG4gICAgbGVmdDogNTAlO1xuICAgIHRyYW5zZm9ybTogdHJhbnNsYXRlKC01MCUsIC01MCUpO1xuICAgIGhlaWdodDogODB2aDtcbiAgICB3aWR0aDogODB2dztcbiAgICBvdmVyZmxvdzogaGlkZGVuO1xuXG4gICAgJiA+IC5tZXJtYWlkLWNvbnRlbnQge1xuICAgICAgcGFkZGluZzogMnJlbTtcbiAgICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgICAgIHRyYW5zZm9ybS1vcmlnaW46IDAgMDtcbiAgICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjFzIGVhc2U7XG4gICAgICBvdmVyZmxvdzogdmlzaWJsZTtcbiAgICAgIG1pbi1oZWlnaHQ6IDIwMHB4O1xuICAgICAgbWluLXdpZHRoOiAyMDBweDtcblxuICAgICAgcHJlIHtcbiAgICAgICAgbWFyZ2luOiAwO1xuICAgICAgICBib3JkZXI6IG5vbmU7XG4gICAgICB9XG5cbiAgICAgIHN2ZyB7XG4gICAgICAgIG1heC13aWR0aDogbm9uZTtcbiAgICAgICAgaGVpZ2h0OiBhdXRvO1xuICAgICAgfVxuICAgIH1cblxuICAgICYgPiAubWVybWFpZC1jb250cm9scyB7XG4gICAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgICBib3R0b206IDIwcHg7XG4gICAgICByaWdodDogMjBweDtcbiAgICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgICBnYXA6IDhweDtcbiAgICAgIHBhZGRpbmc6IDhweDtcbiAgICAgIGJhY2tncm91bmQ6IHZhcigtLWxpZ2h0KTtcbiAgICAgIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWxpZ2h0Z3JheSk7XG4gICAgICBib3JkZXItcmFkaXVzOiA2cHg7XG4gICAgICBib3gtc2hhZG93OiAwIDJweCA0cHggcmdiYSgwLCAwLCAwLCAwLjEpO1xuICAgICAgei1pbmRleDogMjtcblxuICAgICAgLm1lcm1haWQtY29udHJvbC1idXR0b24ge1xuICAgICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgICBhbGlnbi1pdGVtczogY2VudGVyO1xuICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcbiAgICAgICAgd2lkdGg6IDMycHg7XG4gICAgICAgIGhlaWdodDogMzJweDtcbiAgICAgICAgcGFkZGluZzogMDtcbiAgICAgICAgYm9yZGVyOiAxcHggc29saWQgdmFyKC0tbGlnaHRncmF5KTtcbiAgICAgICAgYmFja2dyb3VuZDogdmFyKC0tbGlnaHQpO1xuICAgICAgICBjb2xvcjogdmFyKC0tZGFyayk7XG4gICAgICAgIGJvcmRlci1yYWRpdXM6IDRweDtcbiAgICAgICAgY3Vyc29yOiBwb2ludGVyO1xuICAgICAgICBmb250LXNpemU6IDE2cHg7XG4gICAgICAgIGZvbnQtZmFtaWx5OiB2YXIoLS1ib2R5Rm9udCk7XG4gICAgICAgIHRyYW5zaXRpb246IGFsbCAwLjJzIGVhc2U7XG5cbiAgICAgICAgJjpob3ZlciB7XG4gICAgICAgICAgYmFja2dyb3VuZDogdmFyKC0tbGlnaHRncmF5KTtcbiAgICAgICAgfVxuXG4gICAgICAgICY6YWN0aXZlIHtcbiAgICAgICAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoMXB4KTtcbiAgICAgICAgfVxuXG4gICAgICAgIC8vIFN0eWxlIHRoZSByZXNldCBidXR0b24gZGlmZmVyZW50bHlcbiAgICAgICAgJjpudGgtY2hpbGQoMikge1xuICAgICAgICAgIHdpZHRoOiBhdXRvO1xuICAgICAgICAgIHBhZGRpbmc6IDAgMTJweDtcbiAgICAgICAgICBmb250LXNpemU6IDE0cHg7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cbn1cbiJdfQ== */</style><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" spa-preserve/><script src="../../../prescript.js" type="application/javascript" spa-preserve></script><script type="application/javascript" spa-preserve>const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="https://quartz.jzhao.xyz/index.xml"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://quartz.jzhao.xyz/blog/cpp/2015/2015-05-21-universal-references-in-c-part-rule-of-three-five-og-image.webp"/><meta property="og:image:url" content="https://quartz.jzhao.xyz/blog/cpp/2015/2015-05-21-universal-references-in-c-part-rule-of-three-five-og-image.webp"/><meta name="twitter:image" content="https://quartz.jzhao.xyz/blog/cpp/2015/2015-05-21-universal-references-in-c-part-rule-of-three-five-og-image.webp"/><meta property="og:image:type" content="image/.webp"/></head><body data-slug="blog/cpp/2015/2015-05-21-universal-references-in-c-part-rule-of-three-five"><div id="quartz-root" class="page"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">Quartz 4</a></h2><div class="spacer mobile-only"></div><div style="display: flex; flex-direction: row; flex-wrap: nowrap; gap: 1rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button"><p>Search</p><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something" placeholder="Search for something"/><div class="search-layout" data-preview="true"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a,b)=>!a.isFolder&amp;&amp;!b.isFolder||a.isFolder&amp;&amp;b.isFolder?a.displayName.localeCompare(b.displayName,void 0,{numeric:!0,sensitivity:\&quot;base\&quot;}):!a.isFolder&amp;&amp;b.isFolder?1:-1&quot;,&quot;filterFn&quot;:&quot;node=>node.slugSegment!==\&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;node=>node&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-content"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div class="explorer-content" aria-expanded="false"><ul class="explorer-ul overflow" id="t6tmuo"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#"></a></li></template><template id="template-folder"><li><div class="folder-container"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../blog/">blog</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../blog/cpp/">cpp</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../blog/cpp/2015/">2015</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>[讀書筆記]Universal References in C++11 part 3: 記憶體管理以及Rule of Three(Five)</a></div></nav><h1 class="article-title">[讀書筆記]Universal References in C++11 part 3: 記憶體管理以及Rule of Three(Five)</h1><p show-comma="true" class="content-meta"><time datetime="2015-05-21T00:00:00.000Z">May 21, 2015</time><span>12 min read</span></p><ul class="tags"><li><a href="../../../tags/wordpress" class="internal tag-link">wordpress</a></li><li><a href="../../../tags/define" class="internal tag-link">define</a></li></ul></div></div><article class="popover-hint"><p>[insert page=‘338’ display=‘link’]</p>
+<p>上一篇主要介紹了rvalue reference的概念，以及它導入用來解決無法區分lvalue reference以及暫存物件之間的copy問題。基本上這些操作的本質，其實也就是怎麼用更有效率、更簡單的方法去控管我們所使用的資源而已。──記憶體管理，一直是C++程式設計中一個非常重要的課題。</p>
+<p>一個最常被提到的準則便是RAII的概念。何謂RAII？全名Resource Acquisition Is Initialisation，意即所有接下來這個物件所會用到的資源，在建構階段就已經全部建立完成。例如檔案的開啟、變數的初始化或記憶體配置。但這句話只說了一半，另外一個對應概念是*Resource Release Is Destruction (RRID)，*意即在解構階段必須將所有要來的資源還回去。</p>
+<p>自己new出來的要記得delete，之前開檔案要記得關。它是一種資源所有權管理的概念，每個物件要在自己的生命週期內管理自己擁有的資源；它也是一個設計的大原則，用來提醒程式設計師要記得將不要的資源釋放出去。不然帶來的後果，便是系統的不穩定或是直接崩潰。</p>
+<p>可是我們該怎麼在C++中正確的實作RAII、RRID呢？只要在建構子跟解構子中做完對應的初始化以及釋放的動作就行了嗎？答案是，對，可是也不對。正確的解答應該要看我們對於這個類別在功能性上的設計與期待。若是該物件有將別的物件拷貝一份到自己身上的需求，則需要思考的是我們要進行的是deep copy、shallow copy還是將別人身上所管理的資源move到自己身上。嗯？這個不是上一篇所提到東西嗎？──沒錯，只是上一篇在程式碼的實作上並沒有符合我們對於一個類別在資源管理機制上的期待。一份完整的實作，必須要遵循 <a href="http://en.wikipedia.org/wiki/Rule_of_three_%28C%2B%2B_programming%29" class="external">Rule of Three<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>的設計準則：若是設計師有實作下列任何一個function，則其他的function都必須要有合適的實作：</p>
+<p>class Widget{
+public:
+/** Copy constructor <em>/
+Widget(const Widget&amp; other){
+memberwiseCopy(other);
+}
+/</em>* Destructor <em>/
+~Widget(){}
+/</em>* Copy assignment operator */
+Widget&amp; operator= (const Widget&amp; other)
+{
+memberwiseCopy(other);
+return *this;
+}
+}</p>
+<p>若沒有實作的話，其實編譯會自動產生這些方法(<a href="http://stackoverflow.com/questions/3734247/what-are-all-the-member-functions-created-by-compiler-for-a-class-does-that-hap" class="external">參考這裡<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>)，做的事情就跟上面這一段差不多。只是預設的實作方式通常不符合各種使用需求。最常見的情況是我們在是類別中控管了一個raw pointer：</p>
+<p><a href="../../.././../../tags/define" class="tag-link internal alias" data-slug="tags/define">define</a> SAFE_DELETE(a) do { delete (a); (a) = NULL; } while (0)
+class Widget{
+public:
+/** Copy constructor <em>/
+Widget(const Widget&amp; other){
+memberwiseCopy(other);
+}
+/</em>* Destructor <em>/
+~Widget(){SAFE_DELETE(m_pHeapStorageResource)}
+/</em>* Copy assignment operator */
+Widget&amp; operator= (const Widget&amp; other)
+{
+memberwiseCopy(other);
+return <em>this;
+}
+public:
+Resource</em> m_pHeapStorageResource;
+}</p>
+<p>若是我們使用預設的Copy constructor跟Copy assignment operator產生新的Widget物件時，因為是用shallow copy的方式，所以在第一個物件解構完畢之後，第二個物件中的m_pHeapStorageResource會變成dangling pointer，結果就是第二個物件在解構時造成系統崩潰。所以在Copy constructor跟Copy assignment operator中，我們必須對pHeapStorageResource使用deep copy的方式來避免。這一點，在上一篇文章也有提及。另外我們也有談到怎麼使用rvalue reference來避免多餘的copy操作。這個在C++11中所引入的特性，也讓原本的Rule of three準則變成了Rule of five，因為我們必須再多加二個function的實作才行：</p>
+<p>/** Move constructor */
+Widget(Widget&amp;&amp; other){
+//memberwiseMove(other);//oops! will call memberwiseMove(Widget&amp; other), not our intent here
+//member list initialization
+memberwiseMove(std::forward<widget>(other));
+}</widget></p>
+<p>/** Move assignment operator */
+Widget&amp; operator= (Widget&amp;&amp; other)
+{
+//memberwiseMove(other);//oops! will call memberwiseMove(Widget&amp; other), other is lvalue because it has a name
+memberwiseMove(std::forward<widget>(other));//forward rvalue to memberwiseMove
+return *this;
+}</widget></p>
+<p>我們可以看到裡面有這一行的呼叫： memberwiseMove(std::forward<widget>(other));</widget></p>
+<p>為什麼要使用用std::forward呢？因為若沒有包上這一層的話，其實他會去呼叫的會是lvalue reference版本的memberwiseMove。</p>
+<p>二個memberwiseMove版本的實作如下：</p>
+<p>void memberwiseMove(Widget&amp;&amp; other){
+SAFE_DELETE(m_pHeapStorageResource);//safe release resource
+m_pHeapStorageResource = other.m_pHeapStorageResource; //move
+other.m_pHeapStorageResource = nullptr;</p>
+<pre><code>//Did not benefit from move semantics,
+//because we didn't implement Move assignment operator for class Resource, so it will call it's own default Copy assignment operator(memberwiseCopy)
+m_stackStorageResource = other.m_stackStorageResource;  
+m_i = other.m_i;                                        //did not benefit from move semantics, because it as same as copying an int
+</code></pre>
+<p>}
+void memberwiseMove(Widget&amp; other){
+SAFE_DELETE(m_pHeapStorageResource);//safe release resource
+m_pHeapStorageResource = other.m_pHeapStorageResource; //move
+other.m_pHeapStorageResource = nullptr;
+m_stackStorageResource = other.m_stackStorageResource;
+m_i = other.m_i;
+}</p>
+<p>到底為什麼會這樣？傳進來的參數明明是以rvalue reference傳進來的阿？讓我們來回顧一下什麼是lvalue reference：</p>
+<ul>
+<li>先看它有沒有一個名字，若有名字則一定是lvalue。
+試著取出這個語句的address (使用&amp;)，若可以取出，則是lvalue，反之則是rvalue。</li>
+</ul>
+<p>下面的程式碼證實我們可以取出other的address，因此other雖然宣告成rvalue reference，但它所關連到的名字卻是lvalue reference。</p>
+<p>Widget&amp; operator= (Widget&amp;&amp; other)
+{
+Widget* test = &amp;other;  // get address
+//memberwiseMove(other);//oops! will call memberwiseMove(Widget&amp; other), other is lvalue because it has a name
+memberwiseMove(std::forward<widget>(other));//forward rvalue to memberwiseMove
+return *this;
+}</widget></p>
+<p>這就是為何我們要再包裝一層std::forward了。這個function其實並沒有做任何事，它的職責就只是將物件傳到其他該傳的function而已。若傳進來的是lvalue reference，則傳出呼叫則是lvalue reference的版本；若是傳進來的是rvalue reference，則傳出呼叫的則是rvalue reference的版本。</p>
+<p>接下來讓我們來整理一下使用這個Widget時的狀況吧：</p>
+<p>int main(){</p>
+<pre><code>Widget obj1;
+
+Widget obj2(obj1);// call Copy constructor
+Widget obj3;
+obj3 = obj1; // call Copy assignment operator
+
+Widget obj4;
+obj4 = Widget(); //call Move assignment operator
+
+// call Move constructor, should not call obj1 again, because we mark obj1 move to obj5 here
+Widget obj5 = std::move(obj1);
+
+//call Move assignment operator, should not call obj2 again, because we mark obj2 move to obj5 here
+obj5 = std::move(obj2);
+
+return 0;
+</code></pre>
+<p>}</p>
+<p>我們可以看到上面的code有一個std::move的用法，到底這個function是用來做什麼的？其實它的性質跟std::forward有點像，只是，他的職責是用來將lvalue的名字隱藏起來，因此在呼叫其他function的時候可以順利的找到rvalue reference的版本。它之所以叫做std::move，並不是它真的做了move的動作，其實他什麼事情都沒有做。它只是用來標示提醒程式設計師某個lvalue即將被轉移到其他的物件上，『希望』接下來不要再使用這個將被轉移的lvalue。所以單純呼叫std::move的話，其實是不會發生任何事的。以上面的例子來看，obj1跟obj2都被move到了obj5上面，因此接下來不要再呼叫這二個物件。</p>
+<p>當然，這個並沒有任何強制性，程式設計師還是能夠呼叫這二個物件。只是明明C++已經多了std::move這道麻煩的手續來提醒我們了，若還是執意要呼叫，當然編譯器並沒辦法阻止我們。而後果？通常會是程序崩潰。</p>
+<p>寫到這裡，或許有人會想：為什麼設計一個類別要寫這麼多function阿……會不會太麻煩了一點，有沒有減化的方法？當然有，方法有二個：</p>
+<ol>
+<li>
+<p>把除了建構子跟解構子的function宣告成private或delete，直接禁用這些功能。
+/** Copy constructor <em>/
+Widget(const Widget&amp; other) = delete;
+/</em>* Copy assignment operator <em>/
+Widget&amp; operator= (const Widget&amp; other) = delete;
+/</em>* Move constructor <em>/
+Widget(Widget&amp;&amp; other) = delete;
+/</em>* Move assignment operator */
+Widget&amp; operator= (Widget&amp;&amp; other) = delete;</p>
+</li>
+<li>
+<p>遵循<a href="http://blog.florianwolters.de/educational/2015/01/31/The_Rule_of_Zero/" class="external">Rule of Zero<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> 的設計準則，這樣就不用實作那一堆由編譯器產生的煩人功能了。其實作如下(可選擇用任何的smart pointer機制)：</p>
+</li>
+</ol>
+<p>class Widget{
+public:
+/** Default constructor */
+Widget()
+: m_resourcePtr(new Resource())
+, m_i(0){</p>
+<pre><code>}
+</code></pre>
+<p>public:
+std::shared_ptr<resource> m_resourcePtr;
+Resource m_stackStorageResource;
+int m_i;
+};</resource></p>
+<p>int main(){</p>
+<pre><code>Widget obj1;
+obj1.m_resourcePtr.get()->m_data = &quot;this is obj1&quot;;
+Widget obj2(obj1);// call Copy constructor
+obj2.m_resourcePtr.get()->m_data = &quot;this is obj2&quot;;
+Widget obj3;
+obj3 = obj1; // call Copy assignment operator
+
+Widget obj4;
+obj4 = Widget(); //call Move assignment operator
+
+Widget obj5 = std::move(obj1);
+
+obj5 = std::move(obj2);
+
+return 0;
+</code></pre>
+<p>}</p>
+<p>由上面的code我們可以看到，對於Widget這個物件而言，由於它身上已經沒有任何指標物件了，因此也就不用擔心任何資源所有權轉移的問題。而這，也就是<a href="http://blog.florianwolters.de/educational/2015/01/31/The_Rule_of_Zero/" class="external">Rule of Zero<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> 所談論的哲學：不要手動控管任何的raw pointer，將資源管理這件事全部交給smart pointer處理。上面所討論所有copy不copy，資源move不move的問題，都在smart pointer的機制下被很好的控管完成。對於modern C++而言，這也是被推薦的做法：任何手動控管raw pointer的機制都應該被認為是過時。若在產品環境允許的狀態下，應該首先考慮用Rule of Zero的準則來進行程式設計。</p>
+<p> </p>
+<p>最後，本系列的程式碼，可在github上下載：<a href="https://github.com/dorgonman/UniversalReference" class="external">網址在此<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v4.5.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script type="application/javascript">function o(){let t=this.parentElement;t.classList.toggle("is-collapsed");let e=t.classList.contains("is-collapsed")?this.scrollHeight:t.scrollHeight;t.style.maxHeight=e+"px";let c=t,l=t.parentElement;for(;l;){if(!l.classList.contains("callout"))return;let i=l.classList.contains("is-collapsed")?l.scrollHeight:l.scrollHeight+c.scrollHeight;l.style.maxHeight=i+"px",c=l,l=l.parentElement}}function n(){let t=document.getElementsByClassName("callout is-collapsible");for(let s of t){let e=s.firstElementChild;if(!e)continue;e.addEventListener("click",o),window.addCleanup(()=>e.removeEventListener("click",o));let l=s.classList.contains("is-collapsed")?e.scrollHeight:s.scrollHeight;s.style.maxHeight=l+"px"}}document.addEventListener("nav",n);
+</script><script type="module">function f(i,e){if(!i)return;function r(o){o.target===this&&(o.preventDefault(),o.stopPropagation(),e())}function t(o){o.key.startsWith("Esc")&&(o.preventDefault(),e())}i?.addEventListener("click",r),window.addCleanup(()=>i?.removeEventListener("click",r)),document.addEventListener("keydown",t),window.addCleanup(()=>document.removeEventListener("keydown",t))}function y(i){for(;i.firstChild;)i.removeChild(i.firstChild)}var h=class{constructor(e,r){this.container=e;this.content=r;this.setupEventListeners(),this.setupNavigationControls(),this.resetTransform()}isDragging=!1;startPan={x:0,y:0};currentPan={x:0,y:0};scale=1;MIN_SCALE=.5;MAX_SCALE=3;cleanups=[];setupEventListeners(){let e=this.onMouseDown.bind(this),r=this.onMouseMove.bind(this),t=this.onMouseUp.bind(this),o=this.resetTransform.bind(this);this.container.addEventListener("mousedown",e),document.addEventListener("mousemove",r),document.addEventListener("mouseup",t),window.addEventListener("resize",o),this.cleanups.push(()=>this.container.removeEventListener("mousedown",e),()=>document.removeEventListener("mousemove",r),()=>document.removeEventListener("mouseup",t),()=>window.removeEventListener("resize",o))}cleanup(){for(let e of this.cleanups)e()}setupNavigationControls(){let e=document.createElement("div");e.className="mermaid-controls";let r=this.createButton("+",()=>this.zoom(.1)),t=this.createButton("-",()=>this.zoom(-.1)),o=this.createButton("Reset",()=>this.resetTransform());e.appendChild(t),e.appendChild(o),e.appendChild(r),this.container.appendChild(e)}createButton(e,r){let t=document.createElement("button");return t.textContent=e,t.className="mermaid-control-button",t.addEventListener("click",r),window.addCleanup(()=>t.removeEventListener("click",r)),t}onMouseDown(e){e.button===0&&(this.isDragging=!0,this.startPan={x:e.clientX-this.currentPan.x,y:e.clientY-this.currentPan.y},this.container.style.cursor="grabbing")}onMouseMove(e){this.isDragging&&(e.preventDefault(),this.currentPan={x:e.clientX-this.startPan.x,y:e.clientY-this.startPan.y},this.updateTransform())}onMouseUp(){this.isDragging=!1,this.container.style.cursor="grab"}zoom(e){let r=Math.min(Math.max(this.scale+e,this.MIN_SCALE),this.MAX_SCALE),t=this.content.getBoundingClientRect(),o=t.width/2,n=t.height/2,c=r-this.scale;this.currentPan.x-=o*c,this.currentPan.y-=n*c,this.scale=r,this.updateTransform()}updateTransform(){this.content.style.transform=`translate(${this.currentPan.x}px, ${this.currentPan.y}px) scale(${this.scale})`}resetTransform(){this.scale=1;let e=this.content.querySelector("svg");this.currentPan={x:e.getBoundingClientRect().width/2,y:e.getBoundingClientRect().height/2},this.updateTransform()}},C=["--secondary","--tertiary","--gray","--light","--lightgray","--highlight","--dark","--darkgray","--codeFont"],E;document.addEventListener("nav",async()=>{let e=document.querySelector(".center").querySelectorAll("code.mermaid");if(e.length===0)return;E||=await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.esm.min.mjs");let r=E.default,t=new WeakMap;for(let n of e)t.set(n,n.innerText);async function o(){for(let s of e){s.removeAttribute("data-processed");let a=t.get(s);a&&(s.innerHTML=a)}let n=C.reduce((s,a)=>(s[a]=window.getComputedStyle(document.documentElement).getPropertyValue(a),s),{}),c=document.documentElement.getAttribute("saved-theme")==="dark";r.initialize({startOnLoad:!1,securityLevel:"loose",theme:c?"dark":"base",themeVariables:{fontFamily:n["--codeFont"],primaryColor:n["--light"],primaryTextColor:n["--darkgray"],primaryBorderColor:n["--tertiary"],lineColor:n["--darkgray"],secondaryColor:n["--secondary"],tertiaryColor:n["--tertiary"],clusterBkg:n["--light"],edgeLabelBackground:n["--highlight"]}}),await r.run({nodes:e})}await o(),document.addEventListener("themechange",o),window.addCleanup(()=>document.removeEventListener("themechange",o));for(let n=0;n<e.length;n++){let v=function(){let g=l.querySelector("#mermaid-space"),m=l.querySelector(".mermaid-content");if(!m)return;y(m);let w=c.querySelector("svg").cloneNode(!0);m.appendChild(w),l.classList.add("active"),g.style.cursor="grab",u=new h(g,m)},M=function(){l.classList.remove("active"),u?.cleanup(),u=null},c=e[n],s=c.parentElement,a=s.querySelector(".clipboard-button"),d=s.querySelector(".expand-button"),p=window.getComputedStyle(a),L=a.offsetWidth+parseFloat(p.marginLeft||"0")+parseFloat(p.marginRight||"0");d.style.right=`calc(${L}px + 0.3rem)`,s.prepend(d);let l=s.querySelector("#mermaid-container");if(!l)return;let u=null;d.addEventListener("click",v),f(l,M),window.addCleanup(()=>{u?.cleanup(),d.removeEventListener("click",v)})}});
+</script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript"></script><script src="../../../postscript.js" type="module"></script></html>
