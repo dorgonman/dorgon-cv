@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="220" viewBox="0 0 920 220" fill="none">
+  <defs>
+    <linearGradient id="gold" x1="80" y1="20" x2="840" y2="20" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8C6A35"/>
+      <stop offset="0.5" stop-color="#E5C89A"/>
+      <stop offset="1" stop-color="#8C6A35"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="920" height="220" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <path d="M90 108 C 220 36, 350 30, 460 76 C 570 30, 700 36, 830 108" stroke="url(#gold)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M390 84 C 418 72, 442 72, 460 78 C 478 72, 502 72, 530 84" stroke="url(#gold)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="460" cy="58" r="8" fill="url(#gold)"/>
+    <text x="460" y="178" text-anchor="middle" fill="url(#gold)" style="font-size:56px; letter-spacing:7px; font-family:'Times New Roman', serif;">KANOHORIZONIA</text>
+  </g>
+</svg>
